@@ -7,23 +7,35 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun BottomNav() {
+fun BottomNav(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    onItemClick: (BottomNavItem) -> Unit
+) {
+
+    val backStackEntry = navController.currentBackStackEntryAsState()
 
     BottomNavigation(
+        modifier = modifier,
         backgroundColor = Color.White
     ) {
 
         navItems.forEach { bottomNavItem ->
 
+            val selected = bottomNavItem.route == backStackEntry.value?.destination?.route
+
             BottomNavigationItem(
-                selected = bottomNavItem.selected,
+                selected = selected,
                 selectedContentColor = Color.Cyan,
                 unselectedContentColor = Color.Gray,
-                onClick = {  },
+                onClick = { onItemClick(bottomNavItem) },
                 icon = {
                     Icon(
                         imageVector = bottomNavItem.icon,
@@ -44,7 +56,7 @@ fun BottomNav() {
  data class BottomNavItem(
     val icon: ImageVector,
     val navTitle: String,
-    val selected: Boolean
+    val route: String
 )
 
 
@@ -53,26 +65,26 @@ val navItems = listOf(
     BottomNavItem(
         icon = Icons.Filled.Home,
         navTitle = "Home",
-        selected = true
+        route = Routes.HomeScreen.route
     ),
     BottomNavItem(
         icon = Icons.Default.Star,
         navTitle = "Market",
-        selected = false
+        route = Routes.MarketScreen.route
     ),
     BottomNavItem(
         icon = Icons.Default.Lock,
         navTitle = "Wallet",
-        selected = false
+        route = Routes.WalletScreen.route
     ),
     BottomNavItem(
         icon = Icons.Default.Build,
         navTitle = "History",
-        selected = false
+        route = Routes.HistoryScreen.route
     ),
     BottomNavItem(
         icon = Icons.Filled.AccountCircle,
         navTitle = "Account",
-        selected = false
+        route = Routes.AccountScreen.route
     )
 )

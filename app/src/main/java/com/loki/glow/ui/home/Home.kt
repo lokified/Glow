@@ -30,8 +30,7 @@ import com.loki.glow.ui.components.BottomNav
 fun Home(modifier: Modifier = Modifier) {
 
     Scaffold(
-        topBar = { TopBar(name = "sheldon") },
-        bottomBar = { BottomNav() }
+        topBar = { TopBar(name = "sheldon") }
     ) { padding ->
 
         Column(modifier = modifier.padding(padding)) {
