@@ -1,9 +1,8 @@
 package com.loki.glow.ui.home
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -19,26 +18,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.loki.glow.R
 import com.loki.glow.ui.components.BottomNav
+import com.loki.glow.ui.components.Routes
 
 
 @Composable
-fun Home(modifier: Modifier = Modifier) {
+fun Home(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    onItemClick: (Crypto) -> Unit
+) {
 
     Scaffold(
         topBar = { TopBar(name = "sheldon") }
-    ) { padding ->
+    ) {
 
-        Column(modifier = modifier.padding(padding)) {
+        Column(modifier = modifier.verticalScroll(rememberScrollState())) {
             Wallet(balance = "2,000.23", modifier = Modifier.padding(16.dp))
 
             Sections(one = "Watchlist", two = "See all")
 
-            WatchList()
+            WatchList(navController = navController, onItemClick = onItemClick)
 
             Sections(one = "Refer and earn", two = null)
 
@@ -52,7 +58,10 @@ fun Home(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TopBar(modifier: Modifier = Modifier, name: String) {
+fun TopBar(
+    modifier: Modifier = Modifier,
+    name: String
+) {
 
     TopAppBar(
         modifier = modifier.height(70.dp),
@@ -63,8 +72,8 @@ fun TopBar(modifier: Modifier = Modifier, name: String) {
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
 
             Column {
-                Text(text = "Hello $name")
-                Text(text = "Welcome to Stock")
+                Text(text = "Hello $name", style = MaterialTheme.typography.h1)
+                Text(text = "Welcome to Stock", style = MaterialTheme.typography.body1)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -109,7 +118,7 @@ fun Wallet(
 ) {
 
     Card(
-        backgroundColor = Color.Cyan,
+        backgroundColor = Color(0xFF518F88),
         modifier = modifier
             .height(150.dp)
             .fillMaxWidth(),
@@ -120,14 +129,14 @@ fun Wallet(
         Column(modifier = Modifier.padding(16.dp)) {
 
             Text(text = "Wallet Balance (USD)")
-
+            Spacer(modifier = Modifier.height(8.dp))
             Text(text = "$${balance}", style = MaterialTheme.typography.h1)
 
             TextButton(
                 onClick = { },
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = 30.dp),
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color.Cyan,
+                    contentColor = Color(0xFF518F88),
                     backgroundColor = Color.White
                 )
             ) {
@@ -135,7 +144,10 @@ fun Wallet(
                 Spacer(modifier = Modifier.width(8.dp))
                 Image(
                     imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = null
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(
+                        color = Color(0xFF518F88)
+                    )
                 )
             }
         }
@@ -150,12 +162,16 @@ fun Sections(one: String, two: String?) {
 
         Text(text = one)
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = two ?: "", color = Color.Green)
+        Text(text = two ?: "", color = Color(0xFF518F88))
     }
 }
 
 @Composable
-fun WatchList(modifier: Modifier = Modifier) {
+fun WatchList(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    onItemClick: (Crypto) -> Unit
+) {
 
 
     LazyRow(
@@ -168,59 +184,70 @@ fun WatchList(modifier: Modifier = Modifier) {
 
             WatchListCard(
                 modifier = Modifier.height(110.dp),
-                cryptoImage = item.cryptoImage,
-                cryptoName = item.cryptoName,
-                cryptoSymbol = item.cryptoSymbol,
-                cryptoAmount = item.cryptoAmount,
-                cryptoChange = item.cryptoChange!!
+                crypto = item,
+                navController = navController,
+                onItemClick = onItemClick
             )
         }
     }
 }
 
-val watchListData = listOf(
-    DrawableStringPair(R.drawable.fc1_short_mantras , "Bitcoin" , "BTC" , "50102.20" , "1.40"),
-    DrawableStringPair(R.drawable.fc2_nature_meditations,"Solana", "SOL", "23100.40", "2.75"),
-    DrawableStringPair(R.drawable.fc3_stress_and_anxiety , "Ethereum", "ETH", "3100.90", "0.15"),
-    DrawableStringPair(R.drawable.fc4_self_massage , "Tether USD", "Teth", "100.45", "3.89"),
-    DrawableStringPair(R.drawable.fc5_overwhelmed , "Ape Coin", "APE", "40.40", "4.10"),
-    DrawableStringPair(R.drawable.fc6_nightly_wind_down , "Avalanche", "AVAL", "45.40", "2.56")
-)
-
-data class DrawableStringPair(
+data class Crypto(
     @DrawableRes val cryptoImage: Int,
     val cryptoName: String,
     val cryptoSymbol: String,
     val cryptoAmount: String,
-    val cryptoChange: String
+    val cryptoChange: String,
+    val marketCap: String,
+    val high: String,
+    val low: String,
+    val volume: String
+)
+
+val watchListData = listOf(
+    Crypto(R.drawable.fc1_short_mantras , "Bitcoin" , "BTC" , "50102.20" , "1.40", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc2_nature_meditations,"Solana", "SOL", "23100.40", "2.75", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc3_stress_and_anxiety , "Ethereum", "ETH", "3100.90", "0.15", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc4_self_massage , "Tether USD", "Teth", "100.45", "3.89", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc5_overwhelmed , "Ape Coin", "APE", "40.40", "4.10", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc6_nightly_wind_down , "Avalanche", "AVAL", "45.40", "2.56", "108.51", "49.96", "15.6", "50.63"),
+
+    Crypto(R.drawable.fc1_short_mantras , "Bitcoin" , "BTC" , "50102.20" , "1.40", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc2_nature_meditations,"Solana", "SOL", "23100.40", "2.75", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc3_stress_and_anxiety , "Ethereum", "ETH", "3100.90", "0.15", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc4_self_massage , "Tether USD", "Teth", "100.45", "3.89", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc5_overwhelmed , "Ape Coin", "APE", "40.40", "4.10", "108.51", "49.96", "15.6", "50.63"),
+    Crypto(R.drawable.fc6_nightly_wind_down , "Avalanche", "AVAL", "45.40", "2.56", "108.51", "49.96", "15.6", "50.63")
 )
 
 @Composable
 fun WatchListCard(
     modifier: Modifier = Modifier,
-    @DrawableRes cryptoImage: Int,
-    cryptoName: String,
-    cryptoSymbol: String,
-    cryptoAmount: String,
-    cryptoChange: String,
-    positive: Boolean = true
+    crypto: Crypto,
+    onItemClick: (Crypto) -> Unit = { },
+    navController: NavController
 ) {
-    val changeColor = Color.Green
+    val changeColor = Color(0xFF2CAD58)
 
     Surface(
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colors.surface,
-        modifier = modifier.clickable {  }
+        modifier = modifier.clickable {
+            onItemClick(crypto)
+            navController.navigate(Routes.CryptoScreen.route)
+        }
     ) {
 
         Column(modifier = Modifier
             .padding(8.dp)
             .width(190.dp)) {
 
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
                 Image(
-                    painter = painterResource(id = cryptoImage),
+                    painter = painterResource(id = crypto.cryptoImage),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -230,11 +257,11 @@ fun WatchListCard(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = cryptoName,
+                        text = crypto.cryptoName,
                         style = MaterialTheme.typography.h2
                     )
                     Text(
-                        text = cryptoSymbol,
+                        text = crypto.cryptoSymbol,
                         style = MaterialTheme.typography.h3
                     )
                 }
@@ -243,7 +270,7 @@ fun WatchListCard(
             Spacer(modifier = Modifier.height(15.dp))
 
             Text(
-                text = "$$cryptoAmount",
+                text = "$${crypto.cryptoAmount}",
                 style = MaterialTheme.typography.h2
             )
             Spacer(
@@ -256,7 +283,7 @@ fun WatchListCard(
                     )
             )
             Text(
-                text = "$cryptoChange%",
+                text = "${crypto.cryptoChange}%",
                 style = MaterialTheme.typography.h3,
                 color = changeColor
             )
@@ -270,19 +297,13 @@ fun ReferCard(modifier: Modifier = Modifier) {
     Card(modifier = modifier
         .height(115.dp)
         .fillMaxWidth(),
-        backgroundColor = Color.Cyan,
+        backgroundColor =Color(0xFF518F88),
         contentColor = Color.White,
         shape = RoundedCornerShape(10.dp)
     ) {
 
         Row(modifier = Modifier.padding(12.dp)) {
 
-            Image(
-                painter = painterResource(id = R.drawable.ab1_inversions),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(30.dp)
-            )
 
             Spacer(modifier = Modifier.weight(1f))
             Column(horizontalAlignment = Alignment.End) {
@@ -300,7 +321,10 @@ fun ReferCard(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Image(
                         imageVector = Icons.Filled.ArrowForward,
-                        contentDescription = null
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(
+                            color = Color.White
+                        )
                     )
                 }
             }
@@ -314,7 +338,7 @@ fun TopTrending(modifier: Modifier = Modifier) {
     LazyRow(
 
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 

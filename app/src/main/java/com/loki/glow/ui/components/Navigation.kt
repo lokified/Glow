@@ -1,14 +1,21 @@
 package com.loki.glow.ui.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.loki.glow.ui.crypto.CryptoScreen
+import com.loki.glow.ui.home.Crypto
 import com.loki.glow.ui.home.Home
 import com.loki.glow.ui.market.Market
 
 @Composable
-fun Navigation(navHostController: NavHostController) {
+fun Navigation(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    onItemClick: (Crypto) -> Unit
+) {
 
     NavHost(
         navController = navHostController,
@@ -16,11 +23,15 @@ fun Navigation(navHostController: NavHostController) {
     ) {
 
         composable(route = Routes.HomeScreen.route) {
-            Home()
+            Home(
+                modifier = modifier,
+                navController = navHostController,
+                onItemClick = onItemClick
+            )
         }
 
         composable(route = Routes.MarketScreen.route) {
-            Market()
+            Market(modifier = modifier)
         }
 
         composable(route = Routes.WalletScreen.route) {
@@ -37,6 +48,7 @@ fun Navigation(navHostController: NavHostController) {
 
         composable(route = Routes.CryptoScreen.route) {
 
+            //CryptoScreen(crypto = )
         }
     }
 }

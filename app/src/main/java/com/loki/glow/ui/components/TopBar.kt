@@ -28,17 +28,17 @@ fun TopBar(modifier: Modifier = Modifier, title: String) {
 
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
 
-            Surface(
-                color = MaterialTheme.colors.surface,
-                modifier = Modifier.clickable {  },
-                shape = RoundedCornerShape(30.dp)
-            ) {
-
-                Image(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = null,
-                )
-            }
+//            Surface(
+//                color = MaterialTheme.colors.surface,
+//                modifier = Modifier.clickable {  },
+//                shape = RoundedCornerShape(30.dp)
+//            ) {
+//
+//                Image(
+//                    imageVector = Icons.Default.KeyboardArrowLeft,
+//                    contentDescription = null,
+//                )
+//            }
 
             Text(
                 text = title,

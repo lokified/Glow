@@ -1,6 +1,5 @@
 package com.loki.glow.ui.market
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,16 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.loki.glow.ui.components.TopBar
+import com.loki.glow.ui.home.Crypto
 import com.loki.glow.ui.home.watchListData
 import com.loki.glow.ui.theme.GlowTheme
 
 @Composable
-fun Market() {
+fun Market(modifier: Modifier = Modifier) {
 
     Scaffold(topBar = { TopBar(title = "Cryptos") }) {
 
@@ -46,11 +45,7 @@ fun CryptoSection() {
         items(watchListData) { item ->
 
             CryptoCard(
-                cryptoImage = item.cryptoImage,
-                cryptoName = item.cryptoName,
-                cryptoSymbol = item.cryptoSymbol,
-                cryptoAmount = item.cryptoAmount,
-                cryptoChange = item.cryptoChange
+                crypto = item
             )
         }
     }
@@ -59,14 +54,14 @@ fun CryptoSection() {
 @Composable
 fun CryptoCard(
     modifier: Modifier = Modifier,
-    @DrawableRes cryptoImage: Int,
-    cryptoName: String,
-    cryptoSymbol: String,
-    cryptoAmount: String,
-    cryptoChange: String
+    crypto: Crypto,
+    color: Color = MaterialTheme.colors.surface
 ) {
 
-    Surface(modifier = modifier.fillMaxWidth()) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = color
+    ) {
 
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
@@ -74,7 +69,7 @@ fun CryptoCard(
         ) {
 
             Image(
-                painter = painterResource(id = cryptoImage),
+                painter = painterResource(id = crypto.cryptoImage),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -86,11 +81,11 @@ fun CryptoCard(
             Column {
 
                 Text(
-                    text = cryptoName,
+                    text = crypto.cryptoName,
                     style = MaterialTheme.typography.h2
                 )
                 Text(
-                    text = cryptoSymbol,
+                    text = crypto.cryptoSymbol,
                     style = MaterialTheme.typography.h3
                 )
             }
@@ -100,11 +95,11 @@ fun CryptoCard(
             Column {
 
                 Text(
-                    text = "$$cryptoAmount",
+                    text = "$${crypto.cryptoAmount}",
                     style = MaterialTheme.typography.h2
                 )
                 Text(
-                    text = "$cryptoChange%",
+                    text = "${crypto.cryptoChange}%",
                     style = MaterialTheme.typography.h3,
                     color = Color.Green
                 )
