@@ -68,17 +68,17 @@ val navItems = listOf(
         route = Routes.HomeScreen.route
     ),
     BottomNavItem(
-        icon = Icons.Default.Star,
+        icon = Icons.Default.TrendingUp,
         navTitle = "Market",
         route = Routes.MarketScreen.route
     ),
     BottomNavItem(
-        icon = Icons.Default.Lock,
+        icon = Icons.Default.Money,
         navTitle = "Wallet",
         route = Routes.WalletScreen.route
     ),
     BottomNavItem(
-        icon = Icons.Default.Build,
+        icon = Icons.Default.History,
         navTitle = "History",
         route = Routes.HistoryScreen.route
     ),

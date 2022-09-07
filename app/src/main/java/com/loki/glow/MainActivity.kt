@@ -33,10 +33,7 @@ class MainActivity : ComponentActivity() {
                ) { padding ->
                    Navigation(
                        modifier = Modifier.padding(padding),
-                       navHostController = navController,
-                       onItemClick = { crypto ->
-                           showToast(crypto.cryptoName)
-                       }
+                       navHostController = navController
                    )
                }
             }

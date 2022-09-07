@@ -1,5 +1,7 @@
 package com.loki.glow.ui.home
 
+import android.os.Bundle
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.scrollable
@@ -26,13 +28,13 @@ import androidx.navigation.NavController
 import com.loki.glow.R
 import com.loki.glow.ui.components.BottomNav
 import com.loki.glow.ui.components.Routes
+import kotlinx.parcelize.Parcelize
 
 
 @Composable
 fun Home(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    onItemClick: (Crypto) -> Unit
+    navController: NavController
 ) {
 
     Scaffold(
@@ -44,7 +46,7 @@ fun Home(
 
             Sections(one = "Watchlist", two = "See all")
 
-            WatchList(navController = navController, onItemClick = onItemClick)
+            WatchList(navController = navController)
 
             Sections(one = "Refer and earn", two = null)
 
@@ -52,7 +54,7 @@ fun Home(
 
             Sections(one = "Top Trending", two = null)
 
-            TopTrending()
+            TopTrending(navController = navController)
         }
     }
 }
@@ -169,8 +171,7 @@ fun Sections(one: String, two: String?) {
 @Composable
 fun WatchList(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    onItemClick: (Crypto) -> Unit
+    navController: NavController
 ) {
 
 
@@ -185,13 +186,13 @@ fun WatchList(
             WatchListCard(
                 modifier = Modifier.height(110.dp),
                 crypto = item,
-                navController = navController,
-                onItemClick = onItemClick
+                navController = navController
             )
         }
     }
 }
 
+@Parcelize
 data class Crypto(
     @DrawableRes val cryptoImage: Int,
     val cryptoName: String,
@@ -202,7 +203,7 @@ data class Crypto(
     val high: String,
     val low: String,
     val volume: String
-)
+): Parcelable
 
 val watchListData = listOf(
     Crypto(R.drawable.fc1_short_mantras , "Bitcoin" , "BTC" , "50102.20" , "1.40", "108.51", "49.96", "15.6", "50.63"),
@@ -234,7 +235,7 @@ fun WatchListCard(
         color = MaterialTheme.colors.surface,
         modifier = modifier.clickable {
             onItemClick(crypto)
-            navController.navigate(Routes.CryptoScreen.route)
+            navController.navigate(Routes.CryptoScreen.navWithArgs(crypto))
         }
     ) {
 
@@ -277,7 +278,7 @@ fun WatchListCard(
                 modifier = Modifier
                     .height(1.dp)
                     .width(25.dp)
-                    .padding(horizontal = 1.dp)
+                    .padding(horizontal = 1.dp, vertical = 4.dp)
                     .background(
                         color = Color.Gray
                     )
@@ -306,7 +307,7 @@ fun ReferCard(modifier: Modifier = Modifier) {
 
 
             Spacer(modifier = Modifier.weight(1f))
-            Column(horizontalAlignment = Alignment.End) {
+            Column(modifier = Modifier.padding(end = 30.dp)) {
 
                 Text(text = "Earn up to $500 \nper referral")
                 Spacer(modifier = Modifier.height(8.dp))
@@ -333,7 +334,7 @@ fun ReferCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TopTrending(modifier: Modifier = Modifier) {
+fun TopTrending(modifier: Modifier = Modifier, navController: NavController) {
 
     LazyRow(
 
@@ -346,9 +347,8 @@ fun TopTrending(modifier: Modifier = Modifier) {
 
             TrendingCard(
                 modifier = Modifier.height(65.dp),
-                cryptoImage = item.cryptoImage,
-                cryptoName = item.cryptoName,
-                cryptoSymbol = item.cryptoSymbol
+                crypto = item,
+                navController = navController
             )
         }
     }
@@ -357,16 +357,17 @@ fun TopTrending(modifier: Modifier = Modifier) {
 @Composable
 fun TrendingCard(
     modifier: Modifier = Modifier,
-    @DrawableRes cryptoImage: Int,
-    cryptoName: String,
-    cryptoSymbol: String
+    crypto: Crypto,
+    navController: NavController
 ) {
 
     Surface(
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colors.surface,
         modifier = modifier
-            .clickable { }
+            .clickable {
+                navController.navigate(Routes.CryptoScreen.navWithArgs(crypto))
+            }
             .width(150.dp)
     ) {
 
@@ -375,7 +376,7 @@ fun TrendingCard(
         ) {
 
             Image(
-                painter = painterResource(id = cryptoImage),
+                painter = painterResource(id = crypto.cryptoImage),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -386,11 +387,11 @@ fun TrendingCard(
             Column {
 
                 Text(
-                    text = cryptoName,
+                    text = crypto.cryptoName,
                     style = MaterialTheme.typography.h2
                 )
                 Text(
-                    text = cryptoSymbol,
+                    text = crypto.cryptoSymbol,
                     style = MaterialTheme.typography.h3
                 )
             }

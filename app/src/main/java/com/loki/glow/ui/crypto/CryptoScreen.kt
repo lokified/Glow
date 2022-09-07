@@ -11,9 +11,12 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.loki.glow.R
+import com.loki.glow.ui.components.Routes
 import com.loki.glow.ui.home.Crypto
 import com.loki.glow.ui.market.CryptoCard
 import com.loki.glow.ui.theme.GlowTheme
@@ -21,6 +24,7 @@ import com.loki.glow.ui.theme.GlowTheme
 @Composable
 fun CryptoScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     crypto: Crypto
 ) {
 
@@ -30,13 +34,16 @@ fun CryptoScreen(
             CryptoCard(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 crypto = crypto,
-                color = Color.White
+                color = Color.White,
+                navController = navController
             )
             
             OverviewCard(
                 modifier = Modifier.padding(16.dp),
                 crypto = crypto
             )
+
+            ActionButton(navController = navController, crypto = crypto)
         }
 
     }
@@ -74,7 +81,7 @@ fun CryptoAppBar(modifier: Modifier = Modifier) {
             ) {
 
                 Image(
-                    imageVector = Icons.Filled.Favorite,
+                    painter = painterResource(id = R.drawable.outline_favorite),
                     contentDescription = null,
                     modifier = Modifier.padding(5.dp)
                 )
@@ -120,14 +127,39 @@ fun OverViewRow(name: String, amount: String) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun AppBarPreview() {
+fun ActionButton(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    crypto: Crypto
+) {
 
-    GlowTheme {
-        CryptoScreen(
-            crypto = Crypto(R.drawable.fc1_short_mantras , "Bitcoin" , "BTC" , "50102.20" , "1.40", "108.51", "49.96", "15.6", "50.63")
+    Row(modifier = modifier.padding(16.dp)) {
 
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .padding(end = 4.dp),
+            onClick = { navController.navigate("${Routes.BuyScreen.route}/${crypto.cryptoName}") },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFF518F88)
             )
+        ) {
+            
+            Text(text = "BUY", color = Color.White)
+        }
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(start = 4.dp),
+            onClick = { navController.navigate("${Routes.SellScreen.route}/${crypto.cryptoName}") },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFFFF9800)
+            )
+        ) {
+
+            Text(text = "SELL", color = Color.White)
+        }
     }
 }
